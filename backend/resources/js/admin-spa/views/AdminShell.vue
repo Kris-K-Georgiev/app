@@ -27,11 +27,13 @@
       <main class="content">
         <RouterView />
       </main>
+            <Toasts />
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+      import { ref, onMounted } from 'vue';
+      import Toasts from '../components/Toasts.vue';
 const theme = ref(localStorage.getItem('adminTheme')||'light');
 function toggleTheme(){ theme.value = theme.value==='light'?'dark':'light'; localStorage.setItem('adminTheme', theme.value); }
 const sidebarOpen = ref(false);

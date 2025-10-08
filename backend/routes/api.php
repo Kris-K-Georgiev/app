@@ -24,35 +24,6 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('/version/latest', [VersionController::class, 'latest']);
-Route::get('/health', function() {
-    $nowIso = date(DATE_ATOM); // Native ISO8601 timestamp (avoids Carbon dependency here)
-    $dbStatus = [
-        'connected' => false,
-        'error' => null,
-    ];
-    $appVersions = null;
-    try {
-        $probe = \Illuminate\Support\Facades\DB::select('SELECT 1 as ok');
-        $dbStatus['connected'] = isset($probe[0]) && ($probe[0]->ok ?? 0) == 1;
-        // Only attempt versions count if basic DB connectivity succeeded
-        if($dbStatus['connected']) {
-            try { $appVersions = \App\Models\AppVersion::count(); } catch(\Throwable $inner) { /* ignore */ }
-        }
-    } catch(\Throwable $e) {
-        $dbStatus['error'] = $e->getMessage();
-    }
-
-    $overall = $dbStatus['connected'] ? 'ok' : 'degraded';
-    $payload = [
-        'status' => $overall,
-        'time' => $nowIso,
-        'db' => $dbStatus,
-        'app_versions_count' => $appVersions,
-    ];
-
-    // Always 200 so clients can distinguish network vs service degraded states
-    return response()->json($payload, 200);
-});
 Route::get('/news', [NewsController::class, 'index']);
 Route::get('/news/{news}', [NewsController::class, 'show']);
 Route::get('/events', [EventController::class, 'index']);
@@ -83,48 +54,6 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/prayers/{prayer}', [PrayerController::class, 'update']);
     Route::post('/prayers/{prayer}/like', [PrayerController::class, 'toggleLike']);
 
-    // Admin JSON endpoints consumed by Vue admin panel (guarded by web auth via session, so use 'auth' middleware in web.php if exposing there)
-    Route::middleware(['auth:sanctum'])->prefix('admin')->group(function(){
-        Route::get('users', function(){
-            $q=\App\Models\User::query();
-            if($s=request('search')){ $q->where(function($qq) use ($s){ $qq->where('name','like',"%$s%") ->orWhere('email','like',"%$s% "); }); }
-            return $q->latest()->paginate((int)request('per_page',50));
-        });
-        Route::get('posts', function(){
-            $p=\App\Models\Post::with('user:id,name')->withCount(['likes','comments'])->latest()->paginate((int)request('per_page',50));
-            $p->getCollection()->transform(function($r){ return [ 'id'=>$r->id,'content'=>$r->content,'author'=>$r->user?->only(['id','name']),'likes_count'=>$r->likes_count,'comments_count'=>$r->comments_count,'created_at'=>$r->created_at ]; });
-            return $p;
-        });
-        Route::get('prayers', function(){
-            $p=\App\Models\Prayer::with('user:id,name')->latest()->paginate((int)request('per_page',50));
-            $p->getCollection()->transform(function($r){ return [ 'id'=>$r->id,'content'=>$r->content,'user'=>$r->user?->only(['id','name']),'is_anonymous'=>$r->is_anonymous,'answered'=>$r->answered,'created_at'=>$r->created_at ]; });
-            return $p;
-        });
-        Route::get('feedback', function(){
-            $f=\App\Models\Feedback::with('user:id,name')->latest()->paginate((int)request('per_page',50));
-            return $f;
-        });
-        Route::get('events', function(){
-            $e=\App\Models\Event::with('type:id,name')->latest()->paginate((int)request('per_page',50));
-            return $e;
-        });
-        Route::get('news', function(){
-            $n=\App\Models\News::with('author:id,name')->latest()->paginate((int)request('per_page',50));
-            return $n;
-        });
-        Route::get('feedback-items',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'index']);
-        Route::patch('feedback-items/{feedback}/status',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'updateStatus']);
-        Route::get('metrics', function(){
-            return [
-                'users' => \App\Models\User::count(),
-                'posts' => \App\Models\Post::count(),
-                'prayers' => \App\Models\Prayer::count(),
-                'events' => \App\Models\Event::count(),
-                'news' => \App\Models\News::count(),
-                'feedback' => \App\Models\Feedback::count(),
-            ];
-        });
-    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {

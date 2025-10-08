@@ -11,13 +11,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // If table exists (from previous simple migration), adjust by dropping to create new clean spec (for fresh dev only)
-        if (Schema::hasTable('feedback')) {
-            // Comment this drop in production upgrades. Intended for local reset.
-            Schema::drop('feedback');
-        }
-
-        Schema::create('feedback', function (Blueprint $table) {
+        // Create table only if it doesn't already exist (safe for incremental deploys)
+        if (!Schema::hasTable('feedback')) {
+            Schema::create('feedback', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->text('message');
@@ -38,7 +34,8 @@ return new class extends Migration {
             $table->index(['status','created_at']);
             $table->index('handled_by');
             $table->index(['user_id','created_at']);
-        });
+            });
+        }
     }
 
     public function down(): void

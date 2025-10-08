@@ -20,7 +20,7 @@
       <input v-model="filters.search" placeholder="Search text / contact / ip" />
       <button @click="load">Apply</button>
     </div>
-    <table class="table-sm feedback-table">
+  <table class="table-sm feedback-table">
       <thead>
         <tr>
           <th>ID</th><th>User</th><th>Message</th><th>Contact</th><th>Status</th><th>Severity</th><th>Handled By</th><th>Created</th><th>Actions</th>
@@ -28,7 +28,7 @@
       </thead>
       <tbody>
         <tr v-for="f in rows" :key="f.id">
-          <td>{{ f.id }}</td>
+          <td><router-link :to="{name:'feedback.show', params:{id:f.id}}">{{ f.id }}</router-link></td>
           <td>{{ f.user?.name || '—' }}</td>
           <td class="message-cell">{{ f.message }}</td>
           <td>{{ f.contact || '—' }}</td>
@@ -54,35 +54,39 @@
       </tbody>
     </table>
     <div v-if="loading">Loading…</div>
+    <Pagination :page="page" :pages="pages" @update:page="p=>{page=p; load();}" />
   </div>
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-const rows = ref([]); const loading = ref(false);
+import { api } from '../lib/apiClient';
+import Pagination from '../components/Pagination.vue';
+const rows = ref([]); const loading = ref(false); const page=ref(1); const pages=ref(1);
 const filters = reactive({ status:'', sevMin:'', sevMax:'', from:'', to:'', search:'' });
+function buildParams(){
+  return {
+    page: page.value,
+    status: filters.status || undefined,
+    sev_min: filters.sevMin || undefined,
+    sev_max: filters.sevMax || undefined,
+    from: filters.from || undefined,
+    to: filters.to || undefined,
+    search: filters.search || undefined,
+  };
+}
 async function load(){
   loading.value=true;
   try {
-    const qs = new URLSearchParams();
-    if(filters.status) qs.append('status', filters.status);
-    if(filters.sevMin) qs.append('sev_min', filters.sevMin);
-    if(filters.sevMax) qs.append('sev_max', filters.sevMax);
-    if(filters.from) qs.append('from', filters.from);
-    if(filters.to) qs.append('to', filters.to);
-    if(filters.search) qs.append('search', filters.search);
-    const r = await fetch('/api/admin/feedback-items?'+qs.toString());
-    const j = await r.json();
-    rows.value = (j.data||[]).map(it=> ({...it, _editStatus: it.status, _editSeverity: it.severity, _saving:false }));
+    const data = await api.feedback(buildParams());
+    rows.value = (data.data||[]).map(it=> ({...it, _editStatus: it.status, _editSeverity: it.severity, _saving:false }));
+    pages.value = data.last_page || 1;
   } finally { loading.value=false; }
 }
+function applyFilters(){ page.value=1; load(); }
 async function save(item){
   item._saving = true;
   try {
-    await fetch(`/api/admin/feedback-items/${item.id}/status`, {
-      method:'PATCH',
-      headers:{ 'Content-Type':'application/json','Accept':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').content },
-      body: JSON.stringify({ status: item._editStatus, severity: item._editSeverity || null })
-    });
+    await api.updateFeedbackStatus(item.id, { status: item._editStatus, severity: item._editSeverity || null });
     item.status = item._editStatus;
     item.severity = item._editSeverity;
   } finally { item._saving=false; }

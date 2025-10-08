@@ -11,6 +11,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { api } from '../lib/apiClient';
 const metrics = ref([
   { key:'users', label:'Users', value:'…' },
   { key:'posts', label:'Posts', value:'…' },
@@ -18,9 +19,10 @@ const metrics = ref([
   { key:'events', label:'Events', value:'…' },
   { key:'news', label:'News', value:'…' },
   { key:'feedback', label:'Feedback', value:'…' },
+  { key:'versions', label:'Versions', value:'…' },
 ]);
 async function load(){
-  try { const r = await fetch('/api/admin/metrics'); const j = await r.json(); metrics.value = metrics.value.map(m=> ({...m, value: j[m.key] ?? 0})); } catch(e) {}
+  try { const j = await api.metrics(); metrics.value = metrics.value.map(m=> ({...m, value: j[m.key] ?? 0})); } catch(e) {}
 }
 onMounted(load);
 </script>

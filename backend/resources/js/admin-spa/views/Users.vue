@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="toolbar">
-      <input v-model="search" @keyup.enter="load" placeholder="Search users" />
-      <button @click="load">Search</button>
+      <input v-model="search" @keyup.enter="reload" placeholder="Search users" />
+      <button @click="reload">Search</button>
     </div>
     <table class="table-sm">
       <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Created</th></tr></thead>
@@ -13,11 +13,16 @@
       </tbody>
     </table>
     <div v-if="loading">Loading…</div>
+    <Pagination :page="page" :pages="pages" @update:page="p=>{page=p; load();}" />
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
-const rows=ref([]); const search=ref(''); const loading=ref(false);
-async function load(){ loading.value=true; try { const r= await fetch('/api/admin/users?search='+encodeURIComponent(search.value)); const j= await r.json(); rows.value=j.data||[]; } finally { loading.value=false; } }
+import { ref, onMounted, watch } from 'vue';
+import { api } from '../lib/apiClient';
+import Pagination from '../components/Pagination.vue';
+const rows=ref([]); const search=ref(''); const loading=ref(false); const page=ref(1); const pages=ref(1);
+async function load(){ loading.value=true; try { const data= await api.users({ page: page.value, search: search.value }); rows.value=data.data||[]; pages.value=data.last_page||1; } finally { loading.value=false; } }
+function reload(){ page.value=1; load(); }
 onMounted(load);
+watch(search, val=> { if(!val) reload(); });
 </script>

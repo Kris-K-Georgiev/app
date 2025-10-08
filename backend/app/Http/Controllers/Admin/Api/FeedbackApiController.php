@@ -45,6 +45,26 @@ class FeedbackApiController extends Controller
         return $p;
     }
 
+    public function show(Feedback $feedback)
+    {
+        $feedback->load(['user:id,name','handler:id,name']);
+        return [ 'data' => [
+            'id'=>$feedback->id,
+            'user'=>$feedback->user?->only(['id','name']),
+            'message'=>$feedback->message,
+            'contact'=>$feedback->contact,
+            'status'=>$feedback->status,
+            'severity'=>$feedback->severity,
+            'handled_by'=>$feedback->handler?->only(['id','name']),
+            'handled_at'=>$feedback->handled_at,
+            'ip'=>$feedback->ip,
+            'user_agent'=>$feedback->user_agent,
+            'context'=>$feedback->context,
+            'created_at'=>$feedback->created_at,
+            'updated_at'=>$feedback->updated_at,
+        ] ];
+    }
+
     public function updateStatus(Feedback $feedback, Request $request)
     {
         $data = $request->validate([

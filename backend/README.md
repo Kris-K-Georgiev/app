@@ -59,3 +59,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Admin SPA (Project Specific)
+
+This project exposes a Vue-powered admin single page application loaded from the Blade view `resources/views/admin/spa.blade.php` and accessible after authentication at `/admin/spa`.
+
+JSON endpoints used by the SPA are served under the web (session) guard at `/admin/api/*` (e.g. `/admin/api/metrics`, `/admin/api/users`). They require a logged-in admin user (middleware: `auth`, `AdminOnly`). Legacy `/api/admin/*` Sanctum endpoints have been removed.
+
+Vite entrypoint: `resources/js/admin-spa/main.js`.
+
