@@ -1,6 +1,6 @@
--- Clean BHSS Connect schema (matches current Laravel migrations & code)
--- Generated snapshot updated: 2025-09-30 (added created_by foreign keys on news & events)
--- NOTE: This SQL is for fresh provisioning (MySQL). Run Laravel migrations instead when possible.
+-- Clean BHSS Connect schema (matches consolidated Laravel migration + models)
+-- Generated snapshot updated: 2025-10-08 (added community: posts/prayers + likes/comments + feedback table)
+-- NOTE: Prefer running Laravel migrations. This file is a convenience snapshot for fresh provisioning ONLY.
 
 CREATE DATABASE IF NOT EXISTS bhssapp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE bhssapp;
@@ -111,6 +111,68 @@ CREATE TABLE failed_jobs (
     failed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- Community: posts
+CREATE TABLE posts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    content TEXT NOT NULL,
+    image VARCHAR(255) NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX posts_user_id_index (user_id),
+    CONSTRAINT posts_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE post_likes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY post_likes_unique (post_id,user_id),
+    INDEX post_likes_user_index (user_id),
+    CONSTRAINT post_likes_post_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT post_likes_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE post_comments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    post_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX post_comments_post_id_created_at_index (post_id, created_at),
+    INDEX post_comments_user_id_index (user_id),
+    CONSTRAINT post_comments_post_fk FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+    CONSTRAINT post_comments_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- Community: prayers
+CREATE TABLE prayers (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    content TEXT NOT NULL,
+    is_anonymous TINYINT(1) NOT NULL DEFAULT 0,
+    answered TINYINT(1) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX prayers_user_id_index (user_id),
+    CONSTRAINT prayers_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE prayer_likes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    prayer_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY prayer_likes_unique (prayer_id,user_id),
+    INDEX prayer_likes_user_index (user_id),
+    CONSTRAINT prayer_likes_prayer_fk FOREIGN KEY (prayer_id) REFERENCES prayers(id) ON DELETE CASCADE,
+    CONSTRAINT prayer_likes_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- 6. personal_access_tokens (Sanctum)
 CREATE TABLE personal_access_tokens (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -151,6 +213,31 @@ CREATE TABLE news_images (
     updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX news_images_news_id_position_index (news_id, position),
     CONSTRAINT news_images_news_fk FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE news_likes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    news_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY news_likes_unique (news_id,user_id),
+    INDEX news_likes_user_index (user_id),
+    CONSTRAINT news_likes_news_fk FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
+    CONSTRAINT news_likes_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE news_comments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    news_id BIGINT UNSIGNED NOT NULL,
+    user_id BIGINT UNSIGNED NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX news_comments_news_id_created_at_index (news_id, created_at),
+    INDEX news_comments_user_id_index (user_id),
+    CONSTRAINT news_comments_news_fk FOREIGN KEY (news_id) REFERENCES news(id) ON DELETE CASCADE,
+    CONSTRAINT news_comments_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- 8. events & event_types
@@ -225,4 +312,20 @@ CREATE TABLE event_registrations (
     CONSTRAINT er_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- Feedback (user submitted)
+CREATE TABLE feedback (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NULL,
+    message TEXT NOT NULL,
+    contact VARCHAR(255) NULL,
+    user_agent VARCHAR(255) NULL,
+    ip VARCHAR(100) NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX feedback_user_id_index (user_id),
+    INDEX feedback_created_at_index (created_at),
+    CONSTRAINT feedback_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
 -- Finished clean schema.
+-- Community extra NOTE: for production use prefer migrations & incremental changes rather than this snapshot.
