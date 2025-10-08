@@ -10,7 +10,6 @@ use App\Models\PostComment;
 use App\Models\Prayer;
 use App\Models\PrayerLike;
 use App\Models\Feedback;
-use Illuminate\Support\Facades\DB;
 
 class SampleContentSeeder extends Seeder
 {
@@ -20,8 +19,7 @@ class SampleContentSeeder extends Seeder
         if(User::count() < 5) {
             User::factory(5)->create();
         }
-
-        $users = User::inRandomOrder()->take(5)->get();
+        $users = User::inRandomOrder()->take(6)->get();
 
         // Posts + likes + comments
         foreach(range(1,10) as $i) {
@@ -33,9 +31,7 @@ class SampleContentSeeder extends Seeder
             ]);
             // likes
             $likers = $users->shuffle()->take(rand(0,4));
-            foreach($likers as $liker){
-                PostLike::firstOrCreate(['post_id'=>$post->id,'user_id'=>$liker->id]);
-            }
+            foreach($likers as $liker){ PostLike::firstOrCreate(['post_id'=>$post->id,'user_id'=>$liker->id]); }
             // comments
             $commenters = $users->shuffle()->take(rand(0,3));
             foreach($commenters as $c){
@@ -57,20 +53,31 @@ class SampleContentSeeder extends Seeder
                 'answered'=> false,
             ]);
             $likers = $users->shuffle()->take(rand(0,4));
-            foreach($likers as $liker){
-                PrayerLike::firstOrCreate(['prayer_id'=>$prayer->id,'user_id'=>$liker->id]);
-            }
+            foreach($likers as $liker){ PrayerLike::firstOrCreate(['prayer_id'=>$prayer->id,'user_id'=>$liker->id]); }
         }
 
+        $statuses = ['new','reviewed','closed'];
         // Feedback examples
-        foreach(range(1,3) as $i){
+        foreach(range(1,6) as $i){
             $u = $users->random();
+            $status = $statuses[array_rand($statuses)];
+            $severity = rand(1,5);
+            $handledBy = null; $handledAt=null;
+            if($status !== 'new'){
+                $handledBy = $users->random()->id;
+                $handledAt = now()->subMinutes(rand(5,500));
+            }
             Feedback::create([
                 'user_id'=>$u->id,
-                'message'=>'Feedback sample #'.$i.' great app but consider feature X',
+                'message'=>'Feedback sample #'.$i.' great app but consider feature X #'.$i,
                 'contact'=>$u->email,
                 'user_agent'=>'seeder',
-                'ip'=>'127.0.0.'.rand(2,200)
+                'ip'=>'127.0.0.'.rand(2,200),
+                'status'=>$status,
+                'severity'=>$severity,
+                'handled_by'=>$handledBy,
+                'handled_at'=>$handledAt,
+                'context'=>[ 'platform'=>'android','app_version'=>'1.0.'.rand(0,3) ]
             ]);
         }
     }

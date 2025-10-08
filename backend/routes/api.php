@@ -112,6 +112,8 @@ Route::middleware('auth:sanctum')->group(function(){
             $n=\App\Models\News::with('author:id,name')->latest()->paginate((int)request('per_page',50));
             return $n;
         });
+        Route::get('feedback-items',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'index']);
+        Route::patch('feedback-items/{feedback}/status',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'updateStatus']);
     });
 });
 
