@@ -114,6 +114,16 @@ Route::middleware('auth:sanctum')->group(function(){
         });
         Route::get('feedback-items',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'index']);
         Route::patch('feedback-items/{feedback}/status',[\App\Http\Controllers\Admin\Api\FeedbackApiController::class,'updateStatus']);
+        Route::get('metrics', function(){
+            return [
+                'users' => \App\Models\User::count(),
+                'posts' => \App\Models\Post::count(),
+                'prayers' => \App\Models\Prayer::count(),
+                'events' => \App\Models\Event::count(),
+                'news' => \App\Models\News::count(),
+                'feedback' => \App\Models\Feedback::count(),
+            ];
+        });
     });
 });
 
