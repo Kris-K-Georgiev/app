@@ -216,7 +216,14 @@ class _EventsTabState extends State<EventsTab> {
     final end = e.endDate;
     final range = (end != null && end.isAfter(start)) ? '${fmt(start)} → ${fmt(end)}' : fmt(start);
     final chips = <Widget>[MetaChip(label: range, dense: true)];
-    if (cc != null) chips.add(MetaChip(label: '', dotColor: cc, dense: true));
+    if (cc != null) {
+      // Show city name explicitly
+      if(e.city != null && e.city!.isNotEmpty){
+        chips.add(MetaChip(label: e.city!, dotColor: cc, dense: true));
+      } else {
+        chips.add(MetaChip(label: '', dotColor: cc, dense: true));
+      }
+    }
     if (e.isPast) chips.add(const MetaChip(label: 'Минало', dense: true));
     if ((e.status ?? 'active') != 'active') chips.add(const MetaChip(label: 'Неактивно', dense: true));
     if (e.limit != null && e.registrationsCount != null) {

@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    // Dedicated feedback recipient (falls back to from.address if empty)
+    'feedback_to' => env('FEEDBACK_TO'),
+
 ];

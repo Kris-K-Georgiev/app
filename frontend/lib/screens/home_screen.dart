@@ -18,10 +18,12 @@ import '../ui/meta_chip.dart';
 import 'dart:typed_data';
 import '../ui/content_media_card.dart';
 import '../theme/responsive_factors.dart';
+import 'community_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget { const HomeScreen({super.key}); @override State<HomeScreen> createState()=> _HomeScreenState(); }
 class _HomeScreenState extends State<HomeScreen>{
-  int _tab = 0; // 0 news, 1 events, 2 profile
+  int _tab = 0; // 0 news, 1 events, 2 community, 3 profile
   bool _refreshing=false;
   final Map<int,String> _newsExcerptCache = {}; // cache excerpts
   final ScrollController scrollControllerNews = ScrollController();
@@ -194,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen>{
     final pages = <Widget>[
       Stack(children:[buildNews()]),
       const EventsTab(),
+      const CommunityScreen(),
       const ProfileScreen(),
     ];
 
@@ -203,6 +206,7 @@ class _HomeScreenState extends State<HomeScreen>{
       items: [
         AdaptiveNavItem(label: 'Новини', iconBuilder: (sel,scheme)=> AppIcons.news(color: sel? scheme.primary : scheme.onSurfaceVariant)),
         AdaptiveNavItem(label: 'Събития', iconBuilder: (sel,scheme)=> AppIcons.events(color: sel? scheme.primary : scheme.onSurfaceVariant)),
+        AdaptiveNavItem(label: 'Общност', iconBuilder: (sel,scheme)=> Icon(Icons.forum, color: sel? scheme.primary : scheme.onSurfaceVariant)),
         AdaptiveNavItem(label: 'Профил', iconBuilder: (sel,scheme)=> AppIcons.person(color: sel? scheme.primary : scheme.onSurfaceVariant)),
       ],
       // App bar replaced by per-tab collapsing SliverAppBars
@@ -290,8 +294,13 @@ class _GradientAppBarBackdrop extends StatelessWidget { // flat neutral backgrou
 // Replaced by MetaChip
 
 List<Widget> buildNewsMetaChips(NewsItem n){
+  final chips = <Widget>[];
   final date = n.createdAt!=null? _fmtYMD(n.createdAt!) : '';
-  return [if(date.isNotEmpty) MetaChip(label: date, dense: true)];
+  if(date.isNotEmpty) chips.add(MetaChip(label: date, dense: true));
+  // Placeholder tags (in future backend could return categories / tags array)
+  if(n.title.toLowerCase().contains('важно')) chips.add(const MetaChip(label: 'Важно', dense: true));
+  if((n.content).length > 400) chips.add(const MetaChip(label: 'Дълго', dense: true));
+  return chips;
 }
 
 List<Widget> buildEventMetaChips(EventItem e, {Color? cityColor}){
@@ -305,6 +314,9 @@ List<Widget> buildEventMetaChips(EventItem e, {Color? cityColor}){
     final remaining = (e.limit!-e.registrationsCount!.clamp(0,e.limit!));
     chips.add(MetaChip(label: 'Места $remaining/${e.limit}', dense: true));
   }
+  // Derived tags example
+  if((e.type ?? '').toString().isNotEmpty) chips.add(MetaChip(label: (e.type ?? '').toString(), dense: true));
+  if((e.audience ?? '').toString().isNotEmpty) chips.add(MetaChip(label: (e.audience ?? '').toString(), dense: true));
   return chips;
 }
 

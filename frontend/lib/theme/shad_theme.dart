@@ -74,6 +74,16 @@ class ShadTheme {
           borderStrong: _grayDark,
           badgeBg: _grayLight,
         ),
+        AccessibilityColors(focusRing: _accentLight),
+        ToastTheme(
+          radius: 20,
+          borderWidth: 1,
+          verticalSpacing: 72,
+          entranceDuration: Duration(milliseconds: 300),
+          exitDuration: Duration(milliseconds: 220),
+          reflowDuration: Duration(milliseconds: 300),
+          reflowCurve: Curves.easeOutCubic,
+        ),
         EventTypeColors(colors: {
           // Provide a starter palette for well-known slugs (can grow via future config):
           'conference': Color(0xFF2563EB),
@@ -171,6 +181,16 @@ class ShadTheme {
         thickness: 1,
         space: 24,
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: colorScheme.onSurface,
+        unselectedLabelColor: colorScheme.onSurfaceVariant,
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: colorScheme.primary, width: 3),
+          insets: const EdgeInsets.symmetric(horizontal: 12),
+        ),
+      ),
       listTileTheme: ListTileThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -253,6 +273,16 @@ class ShadTheme {
         unselectedItemColor: colorScheme.onSurfaceVariant.withOpacity(.65),
         type: BottomNavigationBarType.fixed,
       ),
+      tabBarTheme: TabBarTheme(
+        labelColor: colorScheme.onSurface,
+        unselectedLabelColor: colorScheme.onSurfaceVariant,
+        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: colorScheme.primary, width: 3),
+          insets: const EdgeInsets.symmetric(horizontal: 12),
+        ),
+      ),
       cardTheme: CardThemeData(
         color: const Color(0xFF1A1A1A),
         elevation: 0,
@@ -299,7 +329,33 @@ class ShadTheme {
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
-      // extensions already supplied above in both light/dark; keep existing ones implicit
+      extensions: const [
+        SemanticColors(
+          info: _white,
+          success: _white,
+          warning: _white,
+          danger: _white,
+          borderSubtle: _grayDark,
+          borderStrong: _grayLight,
+          badgeBg: _grayDark,
+        ),
+        AccessibilityColors(focusRing: _accentDark),
+        ToastTheme(
+          radius: 20,
+          borderWidth: 1,
+          verticalSpacing: 72,
+          entranceDuration: Duration(milliseconds: 300),
+          exitDuration: Duration(milliseconds: 220),
+          reflowDuration: Duration(milliseconds: 300),
+          reflowCurve: Curves.easeOutCubic,
+        ),
+        EventTypeColors(colors: {
+          'conference': Color(0xFF2563EB),
+          'workshop': Color(0xFF7C3AED),
+          'meetup': Color(0xFF059669),
+          'webinar': Color(0xFFDC2626),
+        })
+      ],
     );
   }
 }

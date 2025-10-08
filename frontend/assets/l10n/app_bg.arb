@@ -1,0 +1,34 @@
+{
+  "complete_profile_title": "Нека довършим профила ти",
+  "complete_profile_sub": "Избери своя град и интереси. Това помага да персонализираме съдържанието.",
+  "interests": "Интереси",
+  "done": "Готово",
+  "error_select_city": "Моля избери град",
+  "onboarding_step2_title": "Онбординг (2/2)",
+  "saving": "Запис...",
+  "rollback_error": "Неуспешно запазване на интересите. Опитай отново." 
+  ,"community": "Общност"
+  ,"posts_tab": "Постове"
+  ,"prayers_tab": "Молитви"
+  ,"new_post": "Нов пост"
+  ,"new_prayer": "Нова молитвена нужда"
+  ,"edit": "Редакция"
+  ,"content_label": "Съдържание"
+  ,"content_required": "Изисква се текст"
+  ,"image": "Снимка"
+  ,"change_image": "Сменѝ снимка"
+  ,"selected": "Избрана"
+  ,"save": "Запази"
+  ,"anonymous": "Анонимно"
+  ,"answered": "Отговорена"
+  ,"likes": "Харесвания"
+  ,"loading_more": "Зареждане..."
+  ,"no_more_posts": "Няма повече постове"
+  ,"no_more_prayers": "Няма повече молитви"
+  ,"error_generic": "Грешка"
+  ,"retry": "Опитай отново"
+  ,"characters_left": "Остават {count} символа"
+  ,"comments": "Коментари ({count})"
+  ,"no_comments": "Няма коментари"
+  ,"add_comment_hint": "Добави коментар"
+}

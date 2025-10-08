@@ -10,15 +10,17 @@ class AuthService {
   }
 
   // Adjusted register signature to first/last/city + password + confirmation
-  Future<String> register({required String firstName, required String lastName, required String city, required String email, required String password, required String passwordConfirmation}) async {
-    final resp = await client.post('/auth/register', {
+  Future<String> register({required String firstName, required String lastName, String? city, required String email, required String password, required String passwordConfirmation}) async {
+    final body = <String,dynamic>{
       'first_name': firstName,
       'last_name': lastName,
-      'city': city,
       'email': email,
       'password': password,
       'password_confirmation': passwordConfirmation,
-    });
+    };
+    // City now optional (captured later in onboarding). Only send if non-null/non-empty for backward compatibility.
+    if(city!=null && city.trim().isNotEmpty){ body['city']=city.trim(); }
+    final resp = await client.post('/auth/register', body);
     return resp['email'] as String; // backend returns email + message
   }
 
@@ -56,6 +58,11 @@ class AuthService {
     if(bio!=null) body['bio']=bio;
     if(phone!=null) body['phone']=phone;
     return await client.put('/auth/profile', body);
+  }
+
+  /// Persist user interests separately (dedicated onboarding endpoint)
+  Future<void> updateInterests(List<String> interests) async {
+    await client.post('/auth/interests', {'interests': interests});
   }
 
   Future<Map<String,dynamic>> updateAvatar(String filePath) async {

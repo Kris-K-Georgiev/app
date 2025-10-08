@@ -134,8 +134,9 @@ class AuthProvider extends ChangeNotifier {
     } finally { _loading=false; notifyListeners(); }
   }
 
-  Future<void> startRegistration({required String firstName, required String lastName, required String city, required String email, required String password, required String passwordConfirmation}) async {
-    _pendingEmail = await _auth.register(firstName:firstName, lastName:lastName, city:city, email:email, password:password, passwordConfirmation:passwordConfirmation);
+  Future<void> startRegistration({required String firstName, required String lastName, required String email, required String password, required String passwordConfirmation}) async {
+    // City removed from initial registration; will be collected post-verification in onboarding.
+    _pendingEmail = await _auth.register(firstName:firstName, lastName:lastName, email:email, password:password, passwordConfirmation:passwordConfirmation);
     notifyListeners();
   }
 
@@ -187,6 +188,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> updateAvatar(String path) async { if(!isAuthenticated) return; final updated = await _auth.updateAvatar(path); _user = updated; notifyListeners(); }
   Future<bool> pollEmailVerified() async { if(!isAuthenticated) return false; final status = await _auth.emailStatus(); if(status['verified']==true){ _user?['email_verified_at']=DateTime.now().toIso8601String(); notifyListeners(); return true;} return false; }
   Future<void> resendVerification() async { if(isAuthenticated) await _auth.resendVerification(); }
+
+  Future<void> setInterests(List<String> interests) async {
+    if(!isAuthenticated) return; await _auth.updateInterests(interests); try { _user = await _auth.me(); } catch(_) {} notifyListeners();
+  }
   bool versionDismissed(String version) => _dismissedVersion == version;
   Future<void> dismissVersion(String version) async { final prefs = await SharedPreferences.getInstance(); _dismissedVersion = version; await prefs.setString('dismissed_version', version); notifyListeners(); }
 

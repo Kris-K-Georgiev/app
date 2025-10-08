@@ -7,6 +7,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Post;
+use App\Models\Prayer;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -51,4 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail
         if(!$this->role) return $map[config('roles.default')] ?? 'Студент';
         return $map[$this->role] ?? ucfirst($this->role);
     }
+
+    // Relationships for statistics
+    public function posts() { return $this->hasMany(Post::class); }
+    public function prayers() { return $this->hasMany(Prayer::class); }
 }

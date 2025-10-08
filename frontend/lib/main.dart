@@ -11,34 +11,47 @@ import 'providers/theme_provider.dart';
 import 'screens/auth_screens.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'screens/home_screen.dart';
+import 'screens/community_screen.dart';
 import 'services/biometric_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'screens/update_screen.dart';
 import 'services/heartbeat_service.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'screens/onboarding_completion_screen.dart'; 
+import 'screens/onboarding_questionnaire_screen.dart';
+import 'onboarding/onboarding_utils.dart';
 import 'screens/onboarding_intro_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'providers/ui_provider.dart';
+import 'providers/preferences_provider.dart';
+import 'ui/typography_scale.dart';
 import 'widgets/global_overlay.dart';
 import 'theme/responsive_factors.dart';
+import 'l10n/l10n.dart';
+import 'providers/community_provider.dart';
+import 'services/community_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class AuthGate extends StatelessWidget {
   final Widget child;
   const AuthGate({super.key, required this.child});
-  @override
+    return MultiProvider(
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (ctx, auth, _) {
         if(!auth.isAuthenticated) {
           // When token lost (logout), push login
+        ChangeNotifierProvider(create: (_) { final p = PreferencesProvider(); p.load(); return p; }),
           return const LoginScreen();
-        }
-        return child;
+      child: Consumer2<ThemeProvider, PreferencesProvider>(
+        builder: (ctx, theme, prefs, _) {
+          if(!prefs.loaded){
+            return const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator())));
+          }
+          final app = MaterialApp(
       },
     );
   }
@@ -74,7 +87,10 @@ void main() {
     // ignore: avoid_print
     print('[unhandled] $error\n$stack');
   });
-}
+          );
+          return TypographyScope(mode: prefs.typographyMode, child: app);
+        }
+      ),
 
 class AppRoot extends StatelessWidget {
   const AppRoot({super.key});
@@ -87,7 +103,8 @@ class AppRoot extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider(apiClient)),
-        ChangeNotifierProvider(create: (_) => ContentProvider(ContentService(apiClient))),
+  ChangeNotifierProvider(create: (_) => ContentProvider(ContentService(apiClient))),
+  ChangeNotifierProvider(create: (_) => CommunityProvider(CommunityService(apiClient))),
         ChangeNotifierProvider(create: (_) => UiProvider()),
       ],
       child: Consumer<ThemeProvider>(
@@ -106,12 +123,15 @@ class AppRoot extends StatelessWidget {
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
+            AppLocalizations.delegate,
           ],
           supportedLocales: const [Locale('bg'), Locale('en')],
+              locale: prefs.locale,
           routes: {
             OnboardingCompletionScreen.routeName: (_) => const OnboardingCompletionScreen(),
             '/profile': (_) => const ProfileScreen(),
             '/settings': (_) => const SettingsScreen(),
+            CommunityScreen.routeName: (_) => const CommunityScreen(),
           },
           themeMode: theme.flutterMode,
           home: const SplashScreen(),
@@ -277,7 +297,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final incomplete = u==null || (nameVal==null || nameVal.trim().isEmpty) || (cityVal==null || cityVal.isEmpty);
       if(mounted){
         if(incomplete){
-          _routing = true; Navigator.of(context).pushReplacementNamed(OnboardingCompletionScreen.routeName);
+          _routing = true; Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=> const OnboardingQuestionnaireScreen()));
         } else {
           _routing = true; Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const AuthGate(child: HomeScreen())));
         }

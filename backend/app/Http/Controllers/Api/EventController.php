@@ -130,6 +130,7 @@ class EventController extends Controller
             'location' => $e->location,
             'images' => $e->images ?? [],
             'city' => $e->city,
+            'city_name' => $e->city_name,
             'audience' => $e->audience,
             'limit' => $e->limit,
             'registrations_count' => $e->registrations_count,

@@ -8,6 +8,10 @@ use App\Http\Controllers\Api\VersionController;
 use App\Http\Controllers\Api\HeartbeatController;
 use App\Http\Controllers\Api\EventRegistrationController;
 use App\Http\Controllers\Api\StreamController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\PrayerController;
+use App\Http\Controllers\Api\UserPublicController;
+use App\Http\Controllers\Api\FeedbackController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1'); // limit new registration attempts
@@ -55,6 +59,12 @@ Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{event}', [EventController::class, 'show']);
 Route::get('/heartbeat', HeartbeatController::class);
 Route::get('/stream', StreamController::class);
+Route::get('/users/{user}', [UserPublicController::class, 'show']);
+// Community public lists
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/prayers', [PrayerController::class, 'index']);
+Route::get('/posts/{post}/comments', [PostController::class, 'listComments']);
+Route::post('/feedback', [FeedbackController::class, 'store'])->middleware(['auth:sanctum','throttle:3,1']);
 Route::middleware('auth:sanctum')->group(function(){
     Route::post('/events', [EventController::class, 'store']);
     Route::post('/events/{event}/register',[EventRegistrationController::class,'register']);
@@ -64,6 +74,14 @@ Route::middleware('auth:sanctum')->group(function(){
     // Social actions for news
     Route::post('/news/{news}/like', [NewsController::class, 'toggleLike']);
     Route::post('/news/{news}/comment', [NewsController::class, 'addComment']);
+    // Posts (community)
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::post('/posts/{post}/like', [PostController::class, 'toggleLike']);
+    Route::post('/posts/{post}/comment', [PostController::class, 'addComment']);
+    Route::post('/prayers', [PrayerController::class, 'store']);
+    Route::put('/posts/{post}', [PostController::class, 'update']);
+    Route::put('/prayers/{prayer}', [PrayerController::class, 'update']);
+    Route::post('/prayers/{prayer}/like', [PrayerController::class, 'toggleLike']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {

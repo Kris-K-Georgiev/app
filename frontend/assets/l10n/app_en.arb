@@ -1,0 +1,34 @@
+{
+  "complete_profile_title": "Let's complete your profile",
+  "complete_profile_sub": "Choose your city and interests to personalize your content.",
+  "interests": "Interests",
+  "done": "Done",
+  "error_select_city": "Please select a city",
+  "onboarding_step2_title": "Onboarding (2/2)",
+  "saving": "Saving...",
+  "rollback_error": "Failed to save interests. Please retry." 
+  ,"community": "Community"
+  ,"posts_tab": "Posts"
+  ,"prayers_tab": "Prayers"
+  ,"new_post": "New Post"
+  ,"new_prayer": "New Prayer Request"
+  ,"edit": "Edit"
+  ,"content_label": "Content"
+  ,"content_required": "Content required"
+  ,"image": "Image"
+  ,"change_image": "Change image"
+  ,"selected": "Selected"
+  ,"save": "Save"
+  ,"anonymous": "Anonymous"
+  ,"answered": "Answered"
+  ,"likes": "Likes"
+  ,"loading_more": "Loading..."
+  ,"no_more_posts": "No more posts"
+  ,"no_more_prayers": "No more prayers"
+  ,"error_generic": "Error"
+  ,"retry": "Retry"
+  ,"characters_left": "{count} characters left"
+  ,"comments": "Comments ({count})"
+  ,"no_comments": "No comments"
+  ,"add_comment_hint": "Add a comment"
+}

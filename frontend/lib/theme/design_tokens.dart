@@ -120,3 +120,75 @@ class AppBadge extends StatelessWidget {
     );
   }
 }
+
+/// Accessibility-oriented tokens (focus rings, high-contrast affordances, etc.)
+class AccessibilityColors extends ThemeExtension<AccessibilityColors> {
+  final Color focusRing;
+  const AccessibilityColors({required this.focusRing});
+
+  @override
+  AccessibilityColors copyWith({Color? focusRing}) => AccessibilityColors(focusRing: focusRing ?? this.focusRing);
+
+  @override
+  ThemeExtension<AccessibilityColors> lerp(ThemeExtension<AccessibilityColors>? other, double t) {
+    if(other is! AccessibilityColors) return this;
+    return AccessibilityColors(focusRing: Color.lerp(focusRing, other.focusRing, t)!);
+  }
+}
+
+/// Theme overrides for toast styling / behavior so different themes can tune
+/// spacing, radii or animation without changing global ToastConfig statics.
+class ToastTheme extends ThemeExtension<ToastTheme> {
+  final double radius;
+  final double borderWidth;
+  final double verticalSpacing; // overrides ToastConfig.verticalSpacing if set
+  final Duration entranceDuration;
+  final Duration exitDuration;
+  final Duration reflowDuration;
+  final Curve reflowCurve;
+
+  const ToastTheme({
+    this.radius = 20,
+    this.borderWidth = 1,
+    this.verticalSpacing = 72,
+    this.entranceDuration = const Duration(milliseconds:300),
+    this.exitDuration = const Duration(milliseconds:220),
+    this.reflowDuration = const Duration(milliseconds:300),
+    this.reflowCurve = Curves.easeOutCubic,
+  });
+
+  @override
+  ToastTheme copyWith({
+    double? radius,
+    double? borderWidth,
+    double? verticalSpacing,
+    Duration? entranceDuration,
+    Duration? exitDuration,
+    Duration? reflowDuration,
+    Curve? reflowCurve,
+  }) => ToastTheme(
+    radius: radius ?? this.radius,
+    borderWidth: borderWidth ?? this.borderWidth,
+    verticalSpacing: verticalSpacing ?? this.verticalSpacing,
+    entranceDuration: entranceDuration ?? this.entranceDuration,
+    exitDuration: exitDuration ?? this.exitDuration,
+    reflowDuration: reflowDuration ?? this.reflowDuration,
+    reflowCurve: reflowCurve ?? this.reflowCurve,
+  );
+
+  @override
+  ThemeExtension<ToastTheme> lerp(ThemeExtension<ToastTheme>? other, double t) {
+    if(other is! ToastTheme) return this;
+    return ToastTheme(
+      radius: lerpDouble(radius, other.radius, t)!,
+      borderWidth: lerpDouble(borderWidth, other.borderWidth, t)!,
+      verticalSpacing: lerpDouble(verticalSpacing, other.verticalSpacing, t)!,
+      entranceDuration: _lerpDuration(entranceDuration, other.entranceDuration, t),
+      exitDuration: _lerpDuration(exitDuration, other.exitDuration, t),
+      reflowDuration: _lerpDuration(reflowDuration, other.reflowDuration, t),
+      reflowCurve: t < .5 ? reflowCurve : other.reflowCurve,
+    );
+  }
+
+  static Duration _lerpDuration(Duration a, Duration b, double t) => Duration(milliseconds: (a.inMilliseconds + (b.inMilliseconds - a.inMilliseconds)*t).round());
+}

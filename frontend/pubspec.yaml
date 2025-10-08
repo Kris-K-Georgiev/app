@@ -90,6 +90,7 @@ flutter:
     - assets/app_icon/app_icon.png
     - assets/logo/dark_logo.png
     - assets/logo/light_logo.png
+    - assets/l10n/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
