@@ -82,6 +82,37 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::put('/posts/{post}', [PostController::class, 'update']);
     Route::put('/prayers/{prayer}', [PrayerController::class, 'update']);
     Route::post('/prayers/{prayer}/like', [PrayerController::class, 'toggleLike']);
+
+    // Admin JSON endpoints consumed by Vue admin panel (guarded by web auth via session, so use 'auth' middleware in web.php if exposing there)
+    Route::middleware(['auth:sanctum'])->prefix('admin')->group(function(){
+        Route::get('users', function(){
+            $q=\App\Models\User::query();
+            if($s=request('search')){ $q->where(function($qq) use ($s){ $qq->where('name','like',"%$s%") ->orWhere('email','like',"%$s% "); }); }
+            return $q->latest()->paginate((int)request('per_page',50));
+        });
+        Route::get('posts', function(){
+            $p=\App\Models\Post::with('user:id,name')->withCount(['likes','comments'])->latest()->paginate((int)request('per_page',50));
+            $p->getCollection()->transform(function($r){ return [ 'id'=>$r->id,'content'=>$r->content,'author'=>$r->user?->only(['id','name']),'likes_count'=>$r->likes_count,'comments_count'=>$r->comments_count,'created_at'=>$r->created_at ]; });
+            return $p;
+        });
+        Route::get('prayers', function(){
+            $p=\App\Models\Prayer::with('user:id,name')->latest()->paginate((int)request('per_page',50));
+            $p->getCollection()->transform(function($r){ return [ 'id'=>$r->id,'content'=>$r->content,'user'=>$r->user?->only(['id','name']),'is_anonymous'=>$r->is_anonymous,'answered'=>$r->answered,'created_at'=>$r->created_at ]; });
+            return $p;
+        });
+        Route::get('feedback', function(){
+            $f=\App\Models\Feedback::with('user:id,name')->latest()->paginate((int)request('per_page',50));
+            return $f;
+        });
+        Route::get('events', function(){
+            $e=\App\Models\Event::with('type:id,name')->latest()->paginate((int)request('per_page',50));
+            return $e;
+        });
+        Route::get('news', function(){
+            $n=\App\Models\News::with('author:id,name')->latest()->paginate((int)request('per_page',50));
+            return $n;
+        });
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
