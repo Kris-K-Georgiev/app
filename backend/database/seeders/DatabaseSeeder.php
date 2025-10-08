@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             EventTypesSeeder::class,
+            SampleContentSeeder::class,
         ]);
 
         // Keep legacy sample users optional (commented out)
