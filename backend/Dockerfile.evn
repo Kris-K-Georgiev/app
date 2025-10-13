@@ -5,29 +5,34 @@ FROM php:8.2-apache
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libzip-dev \
+    libonig-dev \
+    libxml2-dev \
     unzip \
     git \
     curl \
-    && docker-php-ext-install pdo pdo_pgsql zip
+    && docker-php-ext-install pdo pdo_pgsql zip bcmath mbstring tokenizer xml
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Настройка на работната директория
+# Работна директория
 WORKDIR /var/www/html
 
-# Копираме Laravel проекта
+# Копираме само composer файловете първо
+COPY composer.json composer.lock ./
+
+# Инсталираме зависимости
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-dev --optimize-autoloader
+
+# Копираме останалите файлове
 COPY . .
 
-# Инсталираме зависимости на Laravel
-RUN composer install --no-dev --optimize-autoloader
-
-# Настройка на права и Apache
+# Права и Apache
 RUN chown -R www-data:www-data /var/www/html \
     && a2enmod rewrite
 
-# Отваряме порт
+# Порт
 EXPOSE 10000
 
-# Старт на Laravel
+# Стартираме Apache
 CMD ["apache2-foreground"]
