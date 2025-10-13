@@ -19,13 +19,13 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Копираме само composer файловете от backend
-COPY -/backend/composer.json -/backend/composer.lock ./
+COPY ./backend/composer.json ./backend/composer.lock ./
 
 # Инсталираме Laravel зависимостите
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-dev --optimize-autoloader
 
 # Копираме целия Laravel код
-COPY -/backend ./
+COPY ./backend ./
 
 # Права и Apache настройки
 RUN chown -R www-data:www-data /var/www/html \
