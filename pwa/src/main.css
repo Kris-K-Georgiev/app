@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+/* shadcn/ui inspired card tweaks */
+.card {
+  @apply rounded-xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-white/5 backdrop-blur shadow-sm;
+}
+.card-hover:hover {
+  @apply shadow-md ring-1 ring-primary/20;
+}
