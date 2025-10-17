@@ -17,11 +17,11 @@ export function Nav(activeRoute) {
   <div class="container-pro">
     <div class="grid grid-cols-4 pb-[env(safe-area-inset-bottom)]">
       ${items.map(i => {
-        const active = activeRoute.path===i.path
-        const base = 'flex flex-col items-center gap-1 p-3 rounded-xl transition-colors'
+        const active = activeRoute.path===i.path || (i.path==='/chat' && activeRoute.path.startsWith('/chat'))
+        const base = 'flex flex-col items-center gap-1 p-3 rounded-xl transition-colors ripple-container spring'
         const state = active ? 'text-primary bg-black/5 dark:bg-white/10' : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
         return `
-          <a href="#${i.path}" class="${base} ${state}" aria-label="${i.name}">
+          <a href="#${i.path}" class="${base} ${state}" role="button" aria-pressed="${active}" aria-label="${i.name}" data-tooltip="${i.name}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${icons[i.icon]}"></path></svg>
             <span class="text-[11px] leading-none">${i.name}</span>
           </a>

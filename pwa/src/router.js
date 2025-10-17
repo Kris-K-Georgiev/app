@@ -47,9 +47,19 @@ export function initRouter() {
       return
     }
     const ctx = { params, query, navigate: (p) => (window.location.hash = p) }
-    const html = await route.component.render(ctx)
-    app.innerHTML = renderLayout(html, route)
-    queueMicrotask(() => route.component.afterRender?.(ctx))
+    try {
+      console.log('[router] navigating to', route.path, 'params=', params, 'query=', query)
+      window.__debugLog && window.__debugLog('router', `navigating to ${route.path}`)
+      const html = await route.component.render(ctx)
+      console.log('[router] html length', html ? html.length : 0)
+      window.__debugLog && window.__debugLog('router', `html length ${html ? html.length : 0}`)
+      app.innerHTML = renderLayout(html, route)
+      queueMicrotask(() => route.component.afterRender?.(ctx))
+    } catch (err) {
+      console.error('[router] render error for', route.path, err)
+      window.__debugLog && window.__debugLog('router-error', (err && (err.stack || err.message)) || String(err))
+      app.innerHTML = `<div class="p-8"><h2>Грешка при рендер</h2><pre>${(err && err.stack) || err}</pre></div>`
+    }
   }
   window.addEventListener('hashchange', go)
   go()
