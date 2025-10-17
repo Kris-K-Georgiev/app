@@ -10,37 +10,37 @@ export const AdminPage = {
     const [news, events] = await Promise.all([listNews(), listEvents()])
     return `
       <section class="space-y-6">
-        <h1 class="text-2xl font-semibold">Админ панел</h1>
+        <h1 class="section-title">Админ панел</h1>
         <div class="grid gap-6 lg:grid-cols-2">
-          <div class="card p-4">
+          <div class="card p-5">
             <div class="flex items-center justify-between mb-3">
               <h2 class="font-semibold">Новини</h2>
-              <button id="add-news" class="px-2 py-1 bg-primary text-white rounded">+ Добави</button>
+              <button id="add-news" class="btn">+ Добави</button>
             </div>
-            <div class="space-y-2" id="news-list">
+            <div class="divide-y divide-black/5 dark:divide-white/10" id="news-list">
               ${news.map(n => `
-                <div class="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-white/10">
+                <div class="flex items-center justify-between py-2">
                   <span>${n.title}</span>
                   <div class="space-x-2">
-                    <button data-id="${n.id}" class="edit-news text-sm text-blue-600">Редакция</button>
-                    <button data-id="${n.id}" class="delete-news text-sm text-red-600">Изтрий</button>
+                    <button data-id="${n.id}" class="edit-news btn-ghost text-blue-600 dark:text-blue-400">Редакция</button>
+                    <button data-id="${n.id}" class="delete-news btn-ghost text-red-600 dark:text-red-400">Изтрий</button>
                   </div>
                 </div>
               `).join('')}
             </div>
           </div>
-          <div class="card p-4">
+          <div class="card p-5">
             <div class="flex items-center justify-between mb-3">
               <h2 class="font-semibold">Събития</h2>
-              <button id="add-event" class="px-2 py-1 bg-primary text-white rounded">+ Добави</button>
+              <button id="add-event" class="btn">+ Добави</button>
             </div>
-            <div class="space-y-2" id="events-list">
+            <div class="divide-y divide-black/5 dark:divide-white/10" id="events-list">
               ${events.map(e => `
-                <div class="flex items-center justify-between p-2 rounded hover:bg-gray-50 dark:hover:bg-white/10">
+                <div class="flex items-center justify-between py-2">
                   <span>${e.title}</span>
                   <div class="space-x-2">
-                    <button data-id="${e.id}" class="edit-event text-sm text-blue-600">Редакция</button>
-                    <button data-id="${e.id}" class="delete-event text-sm text-red-600">Изтрий</button>
+                    <button data-id="${e.id}" class="edit-event btn-ghost text-blue-600 dark:text-blue-400">Редакция</button>
+                    <button data-id="${e.id}" class="delete-event btn-ghost text-red-600 dark:text-red-400">Изтрий</button>
                   </div>
                 </div>
               `).join('')}

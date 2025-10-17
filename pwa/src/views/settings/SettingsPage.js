@@ -5,10 +5,10 @@ export const SettingsPage = {
   async render(){
     return `
       <section class="max-w-xl mx-auto space-y-4">
-        <h1 class="text-2xl font-semibold">Настройки</h1>
-        <div class="card p-4 space-y-3">
-          <button id="toggle-theme" class="px-3 py-2 rounded bg-gray-100 dark:bg-white/10">Смени тема</button>
-          <button id="check-update" class="px-3 py-2 rounded bg-gray-100 dark:bg-white/10">Провери за обновления</button>
+        <h1 class="section-title">Настройки</h1>
+        <div class="card p-5 space-y-3">
+          <button id="toggle-theme" class="btn-outline w-full text-left">Смени тема</button>
+          <button id="check-update" class="btn-outline w-full text-left">Провери за обновления</button>
           <div>
             <label class="flex items-center gap-2">
               <input id="notif-toggle" type="checkbox" class="rounded border-gray-300" />

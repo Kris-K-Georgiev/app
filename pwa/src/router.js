@@ -1,5 +1,6 @@
 import { renderLayout } from './shell/Layout.js'
 import { routes } from './shell/routes.js'
+import { getAuth, isAdmin } from './state/auth.js'
 
 function match(pathPattern, actualPath) {
   // Supports patterns like /news/:id
@@ -34,6 +35,17 @@ export function initRouter() {
   const app = document.getElementById('app')
   const go = async () => {
     const { route, params, query } = resolveRoute()
+    // Guards
+    const meta = route.meta || {}
+    const auth = getAuth()
+    if (meta.requiresAuth && !auth.user) {
+      window.location.hash = '#/login'
+      return
+    }
+    if (meta.requiresAdmin && !isAdmin()) {
+      window.location.hash = '#/'
+      return
+    }
     const ctx = { params, query, navigate: (p) => (window.location.hash = p) }
     const html = await route.component.render(ctx)
     app.innerHTML = renderLayout(html, route)

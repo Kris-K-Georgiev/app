@@ -5,14 +5,14 @@ export const LoginPage = {
     const { user } = getAuth()
     if (user) return `<div class="max-w-xl mx-auto card p-4">Вече сте влезли. <a class="text-primary" href="#/">Към началото</a></div>`
     return `
-      <section class="max-w-sm mx-auto card p-4 space-y-4">
-        <h1 class="text-xl font-semibold">Вход</h1>
+      <section class="max-w-sm mx-auto card p-5 space-y-4">
+        <h1 class="section-title mb-0">Вход</h1>
         <form id="login-form" class="space-y-3">
-          <input name="email" type="email" placeholder="Имейл" class="w-full rounded border-gray-300 dark:bg-white/10" required />
-          <input name="password" type="password" placeholder="Парола" class="w-full rounded border-gray-300 dark:bg-white/10" required />
-          <button class="w-full px-4 py-2 bg-primary text-white rounded">Вход</button>
+          <input name="email" type="email" placeholder="Имейл" class="input" required />
+          <input name="password" type="password" placeholder="Парола" class="input" required />
+          <button class="btn w-full">Вход</button>
         </form>
-        <button id="setup-bio" class="w-full px-4 py-2 rounded bg-gray-100 dark:bg-white/10">Биометричен вход</button>
+        <button id="setup-bio" class="btn-outline w-full">Биометричен вход</button>
         <p class="text-sm">Нямате акаунт? <a href="#/register" class="text-primary">Регистрация</a></p>
       </section>
     `
