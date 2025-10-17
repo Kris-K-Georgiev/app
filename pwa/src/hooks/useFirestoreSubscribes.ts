@@ -4,11 +4,11 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { useContentStore } from '../stores/content'
 
 export function useSubscribeEvents() {
-  const setEvents = useContentStore(s => s.setEvents)
+  const setEvents = useContentStore((s: any) => s.setEvents)
   useEffect(() => {
     const q = query(collection(db, 'events'), orderBy('start_date', 'desc'))
-    const unsub = onSnapshot(q, snap => {
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[]
+    const unsub = onSnapshot(q, (snap: any) => {
+      const items = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }))
       setEvents(items)
     })
     return () => unsub()
@@ -16,11 +16,11 @@ export function useSubscribeEvents() {
 }
 
 export function useSubscribeNews() {
-  const setNews = useContentStore(s => s.setNews)
+  const setNews = useContentStore((s: any) => s.setNews)
   useEffect(() => {
     const q = query(collection(db, 'news'), orderBy('created_at', 'desc'))
-    const unsub = onSnapshot(q, snap => {
-      const items = snap.docs.map(d => ({ id: d.id, ...d.data() })) as any[]
+    const unsub = onSnapshot(q, (snap: any) => {
+      const items = snap.docs.map((d: any) => ({ id: d.id, ...d.data() }))
       setNews(items)
     })
     return () => unsub()

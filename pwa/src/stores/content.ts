@@ -11,7 +11,7 @@ export type NewsItem = {
   likes_count?: number; comments_count?: number
 }
 
-type State = {
+interface ContentState {
   events: EventItem[]; news: NewsItem[]; loading: boolean;
   selectedDate: string | null; selectedType: string | null; selectedCity: string | null;
   setEvents: (v: EventItem[]) => void;
@@ -22,9 +22,7 @@ type State = {
   setSelectedCity: (city: string | null) => void;
 }
 
-type SetFn = (partial: Partial<State> | ((state: State) => Partial<State>), replace?: boolean) => void
-
-export const useContentStore = create<State>((set: SetFn) => ({
+export const useContentStore = create<ContentState>((set: any) => ({
   events: [], news: [], loading: false,
   selectedDate: null, selectedType: null, selectedCity: null,
   setEvents: (v: EventItem[]) => set({ events: v }),
