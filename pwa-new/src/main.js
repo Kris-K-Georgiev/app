@@ -1,4 +1,5 @@
 import { h, render } from 'htm/preact';
+import './styles.css';
 import { Router } from './router.js';
 import 'flowbite-react';
 import 'idb-keyval';
