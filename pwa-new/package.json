@@ -9,8 +9,8 @@
     "preview": "vite preview --port 5173"
   },
   "dependencies": {
-    "flowbite": "^1.7.0",
-    "flowbite-react": "^2.2.1",
+    "flowbite": "^2.3.0",
+    "flowbite-react": "^2.3.0",
     "htm": "^3.0.3",
     "idb-keyval": "^6.2.0"
   },
