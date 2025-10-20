@@ -1,11 +1,7 @@
 import { h, render } from 'htm/preact';
 import './styles.css';
+import 'flowbite';
+
+// Тук можеш да инициализираш SPA логиката си с HTM/Preact или чист JS
 import { Router } from './router.js';
-import 'flowbite-react';
-import 'idb-keyval';
-
-const App = () => h('div', {class: 'min-h-screen flex flex-col'}, [
-  h(Router)
-]);
-
-render(h(App), document.getElementById('app'));
+render(h(Router), document.getElementById('app'));
