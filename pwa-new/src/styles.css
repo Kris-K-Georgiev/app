@@ -1,0 +1,31 @@
+@tailwind base;@tailwind base;
+
+@tailwind components;@tailwind components;
+
+@tailwind utilities;@tailwind utilities;
+
+
+
+body {/* Custom theme tokens */
+
+  background: #fff;:root{
+
+  color: #222;  --accent: #ff7a00; /* orange */
+
+}  --bg: #ffffff;
+
+}
+
+/* Custom classes for your app */
+
+.bg-bg {[data-theme='dark']{
+
+  background-color: #f8fafc;  --accent: #1e90ff; /* blue */
+
+}  --bg: #000000;
+
+}
+
+body{background:var(--bg)}
+
+.card{background:linear-gradient(0deg, rgba(255,255,255,0.02), rgba(255,255,255,0.02)); border-radius:0.75rem}
