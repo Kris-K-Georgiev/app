@@ -1,11 +1,7 @@
-import { h } from 'htm/preact';import { h } from 'htm/preact'
+import { h } from 'htm/preact'
+import NewsCard from '../components/NewsCard.js'
 
-export default function Home() {import NewsCard from '../components/NewsCard.js'
-
-  return h('div', {class:'p-8 text-center'}, 'Добре дошли във Feed/Home!');
-
-}const sampleNews = [
-
+const sampleNews = [
   {id:'1',title:'Новина 1',cover:'/icons/icon-192.png',excerpt:'Кратко описание'},
   {id:'2',title:'Новина 2',cover:'/icons/icon-192.png',excerpt:'Кратко описание 2'}
 ]
